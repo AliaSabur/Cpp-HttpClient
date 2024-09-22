@@ -35,80 +35,157 @@ Below is an example of how to use **HttpClientLib** to perform various HTTP requ
 #include "json.hpp"
 
 int main() {
-    // Create an instance of the HttpClient
-    HttpClientLib::HttpClient client;
+	// Create an instance of the HttpClient
+	HttpClientLib::HttpClient client;
 
-    // Base URL for testing
-    std::string base_url = "http://httpbin.org";
+	// Base URL for testing
+	std::string base_url = "http://httpbin.org";
 
-    // Test GET request
-    {
-        std::string url = base_url + "/get";
-        std::cout << "Testing GET request to: " << url << "\n";
+	// Test GET request
+	{
+		std::string url = base_url + "/get";
+		std::cout << "Testing GET request to: " << url << "\n";
 
-        HttpClientLib::HttpResponse response = client.get(url);
+		HttpClientLib::HttpResponse response = client.get(url);
 
-        if (response.is_success()) {
-            std::cout << "GET Request succeeded with status " << response.status_code << "\n";
-            std::cout << "Response Body:\n" << response.body << "\n";
-        } else {
-            std::cerr << "GET Request failed: " << response.error << "\n";
-        }
-    }
+		if (response.is_success()) {
+			std::cout << "GET Request succeeded with status " << response.status_code << "\n";
+			std::cout << "Response Body:\n" << response.body << "\n";
+		}
+		else {
+			std::cerr << "GET Request failed: " << response.error << "\n";
+		}
+	}
 
-    // Test POST request with JSON data
-    {
-        std::string url = base_url + "/post";
-        std::cout << "\nTesting POST JSON request to: " << url << "\n";
+	// Test POST request with form data
+	{
+		std::string url = base_url + "/post";
+		std::cout << "\nTesting POST request to: " << url << "\n";
 
-        nlohmann::json jsonData = {
-            {"name", "John Doe"},
-            {"age", 30},
-            {"city", "New York"}
-        };
+		std::string data = "field1=value1&field2=value2";
+		std::unordered_map<std::string, std::string> headers = {
+			{"Content-Type", "application/x-www-form-urlencoded"}
+		};
 
-        HttpClientLib::HttpResponse response = client.postJson(url, jsonData);
+		HttpClientLib::HttpResponse response = client.post(url, data, headers);
 
-        if (response.is_success()) {
-            std::cout << "POST JSON Request succeeded with status " << response.status_code << "\n";
-            std::cout << "Response Body:\n" << response.body << "\n";
-        } else {
-            std::cerr << "POST JSON Request failed: " << response.error << "\n";
-        }
-    }
+		if (response.is_success()) {
+			std::cout << "POST Request succeeded with status " << response.status_code << "\n";
+			std::cout << "Response Body:\n" << response.body << "\n";
+		}
+		else {
+			std::cerr << "POST Request failed: " << response.error << "\n";
+		}
+	}
 
-    // Test PUT request
-    {
-        std::string url = base_url + "/put";
-        std::cout << "\nTesting PUT request to: " << url << "\n";
+	// Test POST request with JSON data
+	{
+		std::string url = base_url + "/post";
+		std::cout << "\nTesting POST JSON request to: " << url << "\n";
 
-        std::string data = "key=updated_value";
-        HttpClientLib::HttpResponse response = client.put(url, data);
+		nlohmann::json jsonData = {
+			{"name", "John Doe"},
+			{"age", 30},
+			{"city", "New York"}
+		};
 
-        if (response.is_success()) {
-            std::cout << "PUT Request succeeded with status " << response.status_code << "\n";
-            std::cout << "Response Body:\n" << response.body << "\n";
-        } else {
-            std::cerr << "PUT Request failed: " << response.error << "\n";
-        }
-    }
+		HttpClientLib::HttpResponse response = client.postJson(url, jsonData);
 
-    // Test DELETE request
-    {
-        std::string url = base_url + "/delete";
-        std::cout << "\nTesting DELETE request to: " << url << "\n";
+		if (response.is_success()) {
+			std::cout << "POST JSON Request succeeded with status " << response.status_code << "\n";
+			std::cout << "Response Body:\n" << response.body << "\n";
+		}
+		else {
+			std::cerr << "POST JSON Request failed: " << response.error << "\n";
+		}
+	}
 
-        HttpClientLib::HttpResponse response = client.del(url);
+	// Test PUT request
+	{
+		std::string url = base_url + "/put";
+		std::cout << "\nTesting PUT request to: " << url << "\n";
 
-        if (response.is_success()) {
-            std::cout << "DELETE Request succeeded with status " << response.status_code << "\n";
-            std::cout << "Response Body:\n" << response.body << "\n";
-        } else {
-            std::cerr << "DELETE Request failed: " << response.error << "\n";
-        }
-    }
+		std::string data = "key=updated_value";
+		HttpClientLib::HttpResponse response = client.put(url, data);
 
-    return 0;
+		if (response.is_success()) {
+			std::cout << "PUT Request succeeded with status " << response.status_code << "\n";
+			std::cout << "Response Body:\n" << response.body << "\n";
+		}
+		else {
+			std::cerr << "PUT Request failed: " << response.error << "\n";
+		}
+	}
+
+	// Test DELETE request
+	{
+		std::string url = base_url + "/delete";
+		std::cout << "\nTesting DELETE request to: " << url << "\n";
+
+		HttpClientLib::HttpResponse response = client.del(url);
+
+		if (response.is_success()) {
+			std::cout << "DELETE Request succeeded with status " << response.status_code << "\n";
+			std::cout << "Response Body:\n" << response.body << "\n";
+		}
+		else {
+			std::cerr << "DELETE Request failed: " << response.error << "\n";
+		}
+	}
+
+	// Test HEAD request
+	{
+		std::string url = base_url + "/get";
+		std::cout << "\nTesting HEAD request to: " << url << "\n";
+
+		HttpClientLib::HttpResponse response = client.head(url);
+
+		if (response.is_success()) {
+			std::cout << "HEAD Request succeeded with status " << response.status_code << "\n";
+			std::cout << "Response Headers:\n";
+			for (const auto& [key, value] : response.headers) {
+				std::cout << key << ": " << value << "\n";
+			}
+		}
+		else {
+			std::cerr << "HEAD Request failed: " << response.error << "\n";
+		}
+	}
+
+	// Test OPTIONS request
+	{
+		std::string url = base_url + "/get";
+		std::cout << "\nTesting OPTIONS request to: " << url << "\n";
+
+		HttpClientLib::HttpResponse response = client.options(url);
+
+		if (response.is_success()) {
+			std::cout << "OPTIONS Request succeeded with status " << response.status_code << "\n";
+			std::cout << "Allowed Methods: " << response.headers["Allow"] << "\n";
+		}
+		else {
+			std::cerr << "OPTIONS Request failed: " << response.error << "\n";
+		}
+	}
+
+	// Test PATCH request
+	{
+		std::string url = base_url + "/patch";
+		std::cout << "\nTesting PATCH request to: " << url << "\n";
+
+		std::string data = "key=patched_value";
+		HttpClientLib::HttpResponse response = client.patch(url, data);
+
+		if (response.is_success()) {
+			std::cout << "PATCH Request succeeded with status " << response.status_code << "\n";
+			std::cout << "Response Body:\n" << response.body << "\n";
+		}
+		else {
+			std::cerr << "PATCH Request failed: " << response.error << "\n";
+		}
+	}
+
+	return 0;
 }
 ```
 
